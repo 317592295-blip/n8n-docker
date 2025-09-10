@@ -1,21 +1,18 @@
-# 用 Alpine 变体，这样才能用 apk
-FROM n8nio/n8n:alpine
+# 使用 GHCR 正确仓库 & 最新稳定版（也可以锁定具体版本号）
+FROM ghcr.io/n8n-io/n8n:latest
 
-# 切到 root 安装依赖
+# 切到 root 安装系统依赖
 USER root
 
-# 安装 ffmpeg + wkhtmltopdf（带 wkhtmltoimage）+ 常见字体（含中文）
-RUN apk add --no-cache \
+# 安装 ffmpeg + wkhtmltopdf(内含 wkhtmltoimage) + 中文字体
+RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
     wkhtmltopdf \
     fontconfig \
-    ttf-dejavu \
-    ttf-freefont \
-    ttf-opensans \
-    wqy-zenhei || true
+    fonts-noto-cjk \
+  && rm -rf /var/lib/apt/lists/*
 
 # 切回 n8n 默认用户
 USER node
 
-# （Zeabur 里启动命令写 n8n，这里无需重复）
-
+# Zeabur 的启动命令在面板里填：n8n
