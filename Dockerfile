@@ -1,20 +1,21 @@
-FROM n8nio/n8n:latest
+# 用 Alpine 变体，这样才能用 apk
+FROM n8nio/n8n:alpine
 
-# 切换 root 以安装系统依赖
+# 切到 root 安装依赖
 USER root
 
-# 安装 ffmpeg + wkhtmltopdf（自带 wkhtmltoimage）+ 中文字体
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# 安装 ffmpeg + wkhtmltopdf（带 wkhtmltoimage）+ 常见字体（含中文）
+RUN apk add --no-cache \
     ffmpeg \
     wkhtmltopdf \
     fontconfig \
-    fonts-noto-cjk \
-  && rm -rf /var/lib/apt/lists/*
+    ttf-dejavu \
+    ttf-freefont \
+    ttf-opensans \
+    wqy-zenhei || true
 
-# 切回 node 用户（n8n 默认使用）
+# 切回 n8n 默认用户
 USER node
 
-# 缓解中文字体不显示的问题（可选）
-ENV FONTCONFIG_PATH=/etc/fonts
+# （Zeabur 里启动命令写 n8n，这里无需重复）
 
-# 运行命令在 Zeabur 设置里填：n8n
